@@ -1,0 +1,118 @@
+symbol,bucket,dex,source,live_only,canonical_underlying,note
+flx:COIN,stocks,flx,perpCategories,no,COIN,
+flx:COPPER,commodities,flx,perpCategories,no,COPPER,
+flx:CRCL,stocks,flx,perpCategories,no,CRCL,
+flx:GAS,commodities,flx,perpCategories,no,GAS,
+flx:GOLD,commodities,flx,perpCategories,no,GOLD,
+flx:NVDA,stocks,flx,perpCategories,no,NVDA,
+flx:OIL,commodities,flx,perpCategories,no,OIL,
+flx:PALLADIUM,commodities,flx,perpCategories,no,PALLADIUM,
+flx:PLATINUM,commodities,flx,perpCategories,no,PLATINUM,
+flx:SILVER,commodities,flx,perpCategories,no,SILVER,
+flx:TSLA,stocks,flx,perpCategories,no,TSLA,
+flx:USA500,indices,flx,perpCategories,no,USA500,
+km:AAPL,stocks,km,perpCategories,no,AAPL,
+km:BABA,stocks,km,perpCategories,no,BABA,
+km:BMNR,stocks,km,perpCategories,no,BMNR,
+km:GLDMINE,indices,km,perpCategories,no,GLDMINE,
+km:GOLD,commodities,km,perpCategories,no,GOLD,
+km:GOOGL,stocks,km,perpCategories,no,GOOGL,
+km:MU,stocks,km,perpCategories,no,MU,
+km:NVDA,stocks,km,perpCategories,no,NVDA,
+km:PLTR,stocks,km,perpCategories,no,PLTR,
+km:RTX,stocks,km,perpCategories,no,RTX,
+km:SEMI,indices,km,perpCategories,no,SEMI,
+km:SILVER,commodities,km,perpCategories,no,SILVER,
+km:SMALL2000,indices,km,perpCategories,no,SMALL2000,
+km:TSLA,stocks,km,perpCategories,no,TSLA,
+km:US500,indices,km,perpCategories,no,US500,
+km:USENERGY,indices,km,perpCategories,no,USENERGY,
+km:USOIL,commodities,km,perpCategories,no,USOIL,
+km:USTECH,indices,km,perpCategories,no,USTECH,
+vntl:ANTHROPIC,preipo,vntl,perpCategories,no,ANTHROPIC,
+vntl:BIOTECH,indices,vntl,perpCategories,no,BIOTECH,
+vntl:DEFENSE,indices,vntl,perpCategories,no,DEFENSE,
+vntl:ENERGY,indices,vntl,perpCategories,no,ENERGY,
+vntl:GOLDJM,indices,vntl,perpCategories,no,GOLDJM,
+vntl:INFOTECH,indices,vntl,perpCategories,no,INFOTECH,
+vntl:MAG7,indices,vntl,perpCategories,no,MAG7,
+vntl:NUCLEAR,indices,vntl,perpCategories,no,NUCLEAR,
+vntl:OPENAI,preipo,vntl,perpCategories,no,OPENAI,
+vntl:ROBOT,indices,vntl,perpCategories,no,ROBOT,
+vntl:SEMIS,indices,vntl,perpCategories,no,SEMIS,
+vntl:SILVERJM,indices,vntl,perpCategories,no,SILVERJM,
+vntl:SPACEX,preipo,vntl,perpCategories,no,SPACEX,
+xyz:AAPL,stocks,xyz,perpCategories,no,AAPL,
+xyz:ALUMINIUM,commodities,xyz,perpCategories,no,ALUMINIUM,
+xyz:AMD,stocks,xyz,perpCategories,no,AMD,
+xyz:AMZN,stocks,xyz,perpCategories,no,AMZN,
+xyz:BABA,stocks,xyz,perpCategories,no,BABA,
+xyz:BRENTOIL,commodities,xyz,perpCategories,no,BRENTOIL,
+xyz:CL,commodities,xyz,perpCategories,no,CL,
+xyz:COIN,stocks,xyz,perpCategories,no,COIN,
+xyz:COPPER,commodities,xyz,perpCategories,no,COPPER,
+xyz:COST,stocks,xyz,perpCategories,no,COST,
+xyz:CRCL,stocks,xyz,perpCategories,no,CRCL,
+xyz:CRWV,stocks,xyz,perpCategories,no,CRWV,
+xyz:DXY,fx,xyz,perpCategories,no,DXY,
+xyz:EUR,fx,xyz,perpCategories,no,EURUSD,
+xyz:EWJ,stocks,xyz,perpCategories,no,EWJ,
+xyz:EWY,stocks,xyz,perpCategories,no,EWY,
+xyz:GME,stocks,xyz,perpCategories,no,GME,
+xyz:GOLD,commodities,xyz,perpCategories,no,GOLD,
+xyz:GOOGL,stocks,xyz,perpCategories,no,GOOGL,
+xyz:HOOD,stocks,xyz,perpCategories,no,HOOD,
+xyz:HYUNDAI,stocks,xyz,perpCategories,no,HYUNDAI,
+xyz:INTC,stocks,xyz,perpCategories,no,INTC,
+xyz:JP225,indices,xyz,perpCategories,no,JP225,
+xyz:JPY,fx,xyz,perpCategories,no,USDJPY,
+xyz:KIOXIA,stocks,xyz,perpCategories,no,KIOXIA,
+xyz:KR200,indices,xyz,perpCategories,no,KR200,
+xyz:LLY,stocks,xyz,perpCategories,no,LLY,
+xyz:META,stocks,xyz,perpCategories,no,META,
+xyz:MSFT,stocks,xyz,perpCategories,no,MSFT,
+xyz:MSTR,stocks,xyz,perpCategories,no,MSTR,
+xyz:MU,stocks,xyz,perpCategories,no,MU,
+xyz:NATGAS,commodities,xyz,perpCategories,no,NATGAS,
+xyz:NFLX,stocks,xyz,perpCategories,no,NFLX,
+xyz:NVDA,stocks,xyz,perpCategories,no,NVDA,
+xyz:ORCL,stocks,xyz,perpCategories,no,ORCL,
+xyz:PALLADIUM,commodities,xyz,perpCategories,no,PALLADIUM,
+xyz:PLATINUM,commodities,xyz,perpCategories,no,PLATINUM,
+xyz:PLTR,stocks,xyz,perpCategories,no,PLTR,
+xyz:RIVN,stocks,xyz,perpCategories,no,RIVN,
+xyz:SILVER,commodities,xyz,perpCategories,no,SILVER,
+xyz:SKHX,stocks,xyz,perpCategories,no,SKHYNIX,
+xyz:SMSN,stocks,xyz,perpCategories,no,SAMSUNG,
+xyz:SNDK,stocks,xyz,perpCategories,no,SNDK,
+xyz:SOFTBANK,stocks,xyz,perpCategories,no,SOFTBANK,
+xyz:SP500,indices,xyz,perpCategories,no,SP500,
+xyz:TSLA,stocks,xyz,perpCategories,no,TSLA,
+xyz:TSM,stocks,xyz,perpCategories,no,TSM,
+xyz:URNM,stocks,xyz,perpCategories,no,URNM,
+xyz:USAR,stocks,xyz,perpCategories,no,USAR,
+xyz:VIX,indices,xyz,perpCategories,no,VIX,
+xyz:XYZ100,indices,xyz,perpCategories,no,XYZ100,
+cash:USA500,indices,cash,allPerpMetas,yes,USA500,live in allPerpMetas but absent from perpCategories
+cash:TSLA,stocks,cash,allPerpMetas,yes,TSLA,live in allPerpMetas but absent from perpCategories
+cash:NVDA,stocks,cash,allPerpMetas,yes,NVDA,live in allPerpMetas but absent from perpCategories
+cash:HOOD,stocks,cash,allPerpMetas,yes,HOOD,live in allPerpMetas but absent from perpCategories
+cash:GOOGL,stocks,cash,allPerpMetas,yes,GOOGL,live in allPerpMetas but absent from perpCategories
+cash:INTC,stocks,cash,allPerpMetas,yes,INTC,live in allPerpMetas but absent from perpCategories
+cash:AMZN,stocks,cash,allPerpMetas,yes,AMZN,live in allPerpMetas but absent from perpCategories
+cash:MSFT,stocks,cash,allPerpMetas,yes,MSFT,live in allPerpMetas but absent from perpCategories
+cash:META,stocks,cash,allPerpMetas,yes,META,live in allPerpMetas but absent from perpCategories
+cash:GOLD,commodities,cash,allPerpMetas,yes,GOLD,live in allPerpMetas but absent from perpCategories
+cash:SILVER,commodities,cash,allPerpMetas,yes,SILVER,live in allPerpMetas but absent from perpCategories
+cash:EWY,stocks,cash,allPerpMetas,yes,EWY,live in allPerpMetas but absent from perpCategories
+cash:WTI,commodities,cash,allPerpMetas,yes,WTI,live in allPerpMetas but absent from perpCategories
+cash:KWEB,stocks,cash,allPerpMetas,yes,KWEB,live in allPerpMetas but absent from perpCategories
+xyz:BX,stocks,xyz,allMids(xyz),yes,BX,live in allMids(xyz) but absent from perpCategories
+xyz:CORN,commodities,xyz,allMids(xyz),yes,CORN,live in allMids(xyz) but absent from perpCategories
+xyz:DKNG,stocks,xyz,allMids(xyz),yes,DKNG,live in allMids(xyz) but absent from perpCategories
+xyz:HIMS,stocks,xyz,allMids(xyz),yes,HIMS,live in allMids(xyz) but absent from perpCategories
+xyz:LITE,stocks,xyz,allMids(xyz),yes,LITE,live in allMids(xyz) but absent from perpCategories
+xyz:TTF,commodities,xyz,allMids(xyz),yes,TTF,live in allMids(xyz) but absent from perpCategories
+xyz:URANIUM,commodities,xyz,allMids(xyz),yes,URANIUM,live in allMids(xyz) but absent from perpCategories
+xyz:WHEAT,commodities,xyz,allMids(xyz),yes,WHEAT,live in allMids(xyz) but absent from perpCategories
+xyz:XLE,stocks,xyz,allMids(xyz),yes,XLE,live in allMids(xyz) but absent from perpCategories

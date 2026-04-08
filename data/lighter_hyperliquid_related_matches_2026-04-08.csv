@@ -1,0 +1,9 @@
+lighter_symbol,lighter_market_type,hyperliquid_symbols,reason
+WTI,commodity,flx:OIL;km:USOIL;xyz:CL,"same crude-oil exposure family, but different symbols/contracts"
+NATGAS,commodity,flx:GAS,"probable natural-gas proxy, but the Hyperliquid symbol is less explicit"
+KRCOMP,index,xyz:KR200,"Korea broad-market exposure vs KOSPI 200, related but not the same index"
+SPY,index,flx:USA500;km:US500;xyz:SP500;cash:USA500,SPY ETF vs S&P 500 index contracts
+QQQ,index,km:USTECH,QQQ ETF vs Nasdaq/US tech index exposure
+BOTZ,index,vntl:ROBOT,"robotics/AI thematic exposure, not the same ETF"
+MAGS,index,vntl:MAG7,Magnificent Seven ETF vs Magnificent Seven index basket
+IWM,index,km:SMALL2000,Russell 2000 ETF vs small-cap index basket
