@@ -7,7 +7,7 @@ from pathlib import Path
 
 SNAPSHOT_DATE = "2026-04-08"
 
-# Official Lighter RWA market-spec page snapshot on 2026-04-08.
+# Official lighter RWA market-spec page snapshot on 2026-04-08.
 LIGHTER_RWA_MARKETS = [
     {"symbol": "XAU", "market_type": "commodity"},
     {"symbol": "XAG", "market_type": "commodity"},
@@ -248,17 +248,17 @@ RELATED_MATCHES = [
     },
 ]
 
-REPORT_TEMPLATE = """# Lighter RWA vs Hyperliquid TradFi/HIP-3 Snapshot
+REPORT_TEMPLATE = """# lighter RWA vs Hyperliquid TradFi/HIP-3 Snapshot
 
 Snapshot date: {snapshot_date}
 
 Data sources:
-- Lighter official RWA market-spec page: https://docs.lighter.xyz/trading/real-world-assets-rwas/market-specifications
-- Lighter public inventory endpoints: `/api/v1/orderBooks` and `/api/v1/orderBookDetails`
+- lighter official RWA market-spec page: https://docs.lighter.xyz/trading/real-world-assets-rwas/market-specifications
+- lighter public inventory endpoints: `/api/v1/orderBooks` and `/api/v1/orderBookDetails`
 - Hyperliquid official info endpoint: `perpCategories`, `allPerpMetas`, and `allMids` with `dex=xyz`
 
 Headline counts:
-- Lighter RWA markets tracked: {lighter_count}
+- lighter RWA markets tracked: {lighter_count}
 - Hyperliquid non-crypto TradFi/HIP-3 markets from `perpCategories`: {hyper_category_count}
 - Hyperliquid additional live-only markets confirmed outside `perpCategories`: {hyper_live_only_count}
 - Exact or high-confidence normalized overlaps: {exact_overlap_count}
@@ -326,7 +326,7 @@ def build_collision_rows(exact_overlap_rows: list[dict[str, str]]) -> list[dict[
         {
             "Asset": row["canonical_underlying"],
             "Hyper": row["hyperliquid_symbols"],
-            "Lighter": row["lighter_symbol"],
+            "lighter": row["lighter_symbol"],
         }
         for row in exact_overlap_rows
     ]
@@ -380,7 +380,7 @@ def main() -> None:
     )
     write_csv(
         data_dir / f"lighter_hyperliquid_collision_list_{SNAPSHOT_DATE}.csv",
-        ["Asset", "Hyper", "Lighter"],
+        ["Asset", "Hyper", "lighter"],
         collision_rows,
     )
     write_csv(
