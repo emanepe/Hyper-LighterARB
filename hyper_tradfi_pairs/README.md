@@ -109,11 +109,20 @@ Backtest Hyperliquid <> Lighter convergence pairs:
 python -m hyper_tradfi_pairs.scripts.backtest_hyper_lighter --assets all --date 2026-04-23 --entry-gap-bps 5 --exit-gap-bps 0.25 --min-entry-edge-bps 1
 ```
 
+Stricter liquidity-aware variant:
+
+```powershell
+python -m hyper_tradfi_pairs.scripts.backtest_hyper_lighter --assets BRENTOIL,GOLD,SILVER --date 2026-04-23 --entry-gap-bps 5 --exit-gap-bps 0.25 --min-entry-edge-bps 1 --min-notional-usd 1000 --book-depth 5 --persistence-seconds 2 --fee-bps-per-leg 1
+```
+
 This logic is directional convergence trading:
 
 - If Hyperliquid mid is rich vs Lighter, short Hyperliquid at bid and long Lighter at ask.
 - If Lighter mid is rich vs Hyperliquid, short Lighter at bid and long Hyperliquid at ask.
 - Exit when the mid gap converges near zero, flips, or reaches the max holding time.
+- `--persistence-seconds` reduces stale one-second signal noise.
+- `--book-depth` changes the displayed-liquidity capacity proxy from top-of-book to `depth_5` or `depth_20`.
+- `--fee-bps-per-leg` estimates taker fees on both venues for entry and exit.
 
 Fetch Yahoo price-only proxy data:
 

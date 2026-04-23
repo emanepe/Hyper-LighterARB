@@ -15,6 +15,9 @@ class DexPairBacktestConfig:
     min_notional_usd: float = 25.0
     max_notional_usd: float = 10_000.0
     max_holding_seconds: int = 300
+    persistence_seconds: int = 1
+    book_depth: int = 1
+    fee_bps_per_leg: float = 0.0
 
 
 def _load_snapshots(path: Path, prefix: str) -> pd.DataFrame:
@@ -37,9 +40,13 @@ def _load_snapshots(path: Path, prefix: str) -> pd.DataFrame:
         "mid_px",
         "spread_bps",
         "bid_depth_5_sz",
+        "bid_depth_5_notional",
         "ask_depth_5_sz",
+        "ask_depth_5_notional",
         "bid_depth_20_sz",
+        "bid_depth_20_notional",
         "ask_depth_20_sz",
+        "ask_depth_20_notional",
     ]
     keep = [column for column in keep if column in df.columns]
     return df[keep].rename(columns={column: f"{prefix}_{column}" for column in keep if column != "timestamp"})
@@ -63,6 +70,8 @@ def build_hyper_lighter_frame(hyper_path: Path, lighter_path: Path) -> pd.DataFr
     frame["hyper_ask_notional"] = frame["hyper_best_ask_px"] * frame["hyper_best_ask_sz"]
     frame["lighter_bid_notional"] = frame["lighter_best_bid_px"] * frame["lighter_best_bid_sz"]
     frame["lighter_ask_notional"] = frame["lighter_best_ask_px"] * frame["lighter_best_ask_sz"]
+    _ensure_depth_metrics(frame, "hyper")
+    _ensure_depth_metrics(frame, "lighter")
     frame["hyper_rich_cap_notional"] = np.minimum.reduce(
         [frame["hyper_bid_notional"], frame["lighter_ask_notional"]]
     )
@@ -72,16 +81,88 @@ def build_hyper_lighter_frame(hyper_path: Path, lighter_path: Path) -> pd.DataFr
     return frame
 
 
-def _open_position(asset: str, row: pd.Series, config: DexPairBacktestConfig) -> dict | None:
-    # Positive gap: Hyperliquid is rich, so short Hyperliquid and long Lighter.
+def _ensure_depth_metrics(frame: pd.DataFrame, prefix: str) -> None:
+    for side in ("bid", "ask"):
+        top_px = frame[f"{prefix}_best_{side}_px"]
+        top_sz = frame[f"{prefix}_best_{side}_sz"]
+        for depth in (5, 20):
+            sz_column = f"{prefix}_{side}_depth_{depth}_sz"
+            notional_column = f"{prefix}_{side}_depth_{depth}_notional"
+            avg_px_column = f"{prefix}_{side}_depth_{depth}_avg_px"
+            if sz_column not in frame:
+                frame[sz_column] = top_sz
+            if notional_column not in frame:
+                frame[notional_column] = top_px * frame[sz_column]
+            frame[avg_px_column] = np.where(
+                frame[sz_column] > 0,
+                frame[notional_column] / frame[sz_column],
+                top_px,
+            )
+
+
+def _capacity_column(side: str, config: DexPairBacktestConfig) -> str:
+    if config.book_depth <= 1:
+        return f"{side}_cap_notional"
+    if config.book_depth <= 5:
+        return f"{side}_depth_5_cap_notional"
+    return f"{side}_depth_20_cap_notional"
+
+
+def _execution_price(row: pd.Series, venue: str, side: str, config: DexPairBacktestConfig) -> float:
+    if config.book_depth <= 1:
+        return float(row[f"{venue}_best_{side}_px"])
+    if config.book_depth <= 5:
+        return float(row[f"{venue}_{side}_depth_5_avg_px"])
+    return float(row[f"{venue}_{side}_depth_20_avg_px"])
+
+
+def _with_capacity_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    frame = frame.copy()
+    frame["hyper_rich_depth_5_cap_notional"] = np.minimum.reduce(
+        [frame["hyper_bid_depth_5_notional"], frame["lighter_ask_depth_5_notional"]]
+    )
+    frame["lighter_rich_depth_5_cap_notional"] = np.minimum.reduce(
+        [frame["lighter_bid_depth_5_notional"], frame["hyper_ask_depth_5_notional"]]
+    )
+    frame["hyper_rich_depth_20_cap_notional"] = np.minimum.reduce(
+        [frame["hyper_bid_depth_20_notional"], frame["lighter_ask_depth_20_notional"]]
+    )
+    frame["lighter_rich_depth_20_cap_notional"] = np.minimum.reduce(
+        [frame["lighter_bid_depth_20_notional"], frame["hyper_ask_depth_20_notional"]]
+    )
+    return frame
+
+
+def _signal_side(row: pd.Series, config: DexPairBacktestConfig) -> str | None:
     if row["mid_gap_bps"] >= config.entry_gap_bps:
         if row["hyper_rich_entry_edge_bps"] < config.min_entry_edge_bps:
             return None
-        notional = min(float(row["hyper_rich_cap_notional"]), config.max_notional_usd)
+        cap_column = _capacity_column("hyper_rich", config)
+        if float(row[cap_column]) < config.min_notional_usd:
+            return None
+        return "short_hyper_long_lighter"
+
+    if row["mid_gap_bps"] <= -config.entry_gap_bps:
+        if row["lighter_rich_entry_edge_bps"] < config.min_entry_edge_bps:
+            return None
+        cap_column = _capacity_column("lighter_rich", config)
+        if float(row[cap_column]) < config.min_notional_usd:
+            return None
+        return "long_hyper_short_lighter"
+
+    return None
+
+
+def _open_position(asset: str, row: pd.Series, config: DexPairBacktestConfig) -> dict | None:
+    # Positive gap: Hyperliquid is rich, so short Hyperliquid and long Lighter.
+    if row["mid_gap_bps"] >= config.entry_gap_bps:
+        if _signal_side(row, config) != "short_hyper_long_lighter":
+            return None
+        notional = min(float(row[_capacity_column("hyper_rich", config)]), config.max_notional_usd)
         if notional < config.min_notional_usd:
             return None
-        hyper_entry_px = float(row["hyper_best_bid_px"])
-        lighter_entry_px = float(row["lighter_best_ask_px"])
+        hyper_entry_px = _execution_price(row, "hyper", "bid", config)
+        lighter_entry_px = _execution_price(row, "lighter", "ask", config)
         return {
             "asset": asset,
             "direction": "short_hyper_long_lighter",
@@ -97,13 +178,13 @@ def _open_position(asset: str, row: pd.Series, config: DexPairBacktestConfig) ->
 
     # Negative gap: Lighter is rich, so long Hyperliquid and short Lighter.
     if row["mid_gap_bps"] <= -config.entry_gap_bps:
-        if row["lighter_rich_entry_edge_bps"] < config.min_entry_edge_bps:
+        if _signal_side(row, config) != "long_hyper_short_lighter":
             return None
-        notional = min(float(row["lighter_rich_cap_notional"]), config.max_notional_usd)
+        notional = min(float(row[_capacity_column("lighter_rich", config)]), config.max_notional_usd)
         if notional < config.min_notional_usd:
             return None
-        hyper_entry_px = float(row["hyper_best_ask_px"])
-        lighter_entry_px = float(row["lighter_best_bid_px"])
+        hyper_entry_px = _execution_price(row, "hyper", "ask", config)
+        lighter_entry_px = _execution_price(row, "lighter", "bid", config)
         return {
             "asset": asset,
             "direction": "long_hyper_short_lighter",
@@ -139,17 +220,21 @@ def _should_close(position: dict, row: pd.Series, config: DexPairBacktestConfig)
 
 def _close_position(position: dict, row: pd.Series, reason: str) -> dict:
     if position["direction"] == "short_hyper_long_lighter":
-        hyper_exit_px = float(row["hyper_best_ask_px"])
-        lighter_exit_px = float(row["lighter_best_bid_px"])
+        hyper_exit_px = _execution_price(row, "hyper", "ask", position["config"])
+        lighter_exit_px = _execution_price(row, "lighter", "bid", position["config"])
         hyper_pnl = position["hyper_qty"] * (position["hyper_entry_px"] - hyper_exit_px)
         lighter_pnl = position["lighter_qty"] * (lighter_exit_px - position["lighter_entry_px"])
     else:
-        hyper_exit_px = float(row["hyper_best_bid_px"])
-        lighter_exit_px = float(row["lighter_best_ask_px"])
+        hyper_exit_px = _execution_price(row, "hyper", "bid", position["config"])
+        lighter_exit_px = _execution_price(row, "lighter", "ask", position["config"])
         hyper_pnl = position["hyper_qty"] * (hyper_exit_px - position["hyper_entry_px"])
         lighter_pnl = position["lighter_qty"] * (position["lighter_entry_px"] - lighter_exit_px)
 
     holding_seconds = int((row["timestamp"] - position["entry_time"]).total_seconds())
+    entry_fee_usd = position["entry_notional_usd"] * (position["fee_bps_per_leg"] / 10_000) * 2
+    exit_fee_usd = position["entry_notional_usd"] * (position["fee_bps_per_leg"] / 10_000) * 2
+    gross_pnl = hyper_pnl + lighter_pnl
+    total_fees_usd = entry_fee_usd + exit_fee_usd
     return {
         "asset": position["asset"],
         "direction": position["direction"],
@@ -167,7 +252,9 @@ def _close_position(position: dict, row: pd.Series, reason: str) -> dict:
         "lighter_exit_px": lighter_exit_px,
         "hyper_pnl_usd": hyper_pnl,
         "lighter_pnl_usd": lighter_pnl,
-        "gross_pnl_usd": hyper_pnl + lighter_pnl,
+        "gross_pnl_usd": gross_pnl,
+        "fees_usd": total_fees_usd,
+        "net_pnl_usd": gross_pnl - total_fees_usd,
     }
 
 
@@ -181,9 +268,30 @@ def run_convergence_backtest(
 
     trades: list[dict] = []
     position: dict | None = None
-    for _index, row in signal_frame.iterrows():
+    qualifying_side: str | None = None
+    qualifying_count = 0
+    frame = _with_capacity_columns(signal_frame)
+    for _index, row in frame.iterrows():
         if position is None:
-            position = _open_position(asset=asset, row=row, config=config)
+            side = _signal_side(row, config)
+            if side is None:
+                qualifying_side = None
+                qualifying_count = 0
+                continue
+
+            if side == qualifying_side:
+                qualifying_count += 1
+            else:
+                qualifying_side = side
+                qualifying_count = 1
+
+            if qualifying_count >= max(1, config.persistence_seconds):
+                position = _open_position(asset=asset, row=row, config=config)
+                if position is not None:
+                    position["fee_bps_per_leg"] = config.fee_bps_per_leg
+                    position["config"] = config
+                qualifying_side = None
+                qualifying_count = 0
             continue
 
         should_close, reason = _should_close(position=position, row=row, config=config)
@@ -216,8 +324,12 @@ def summarize_convergence(asset: str, signal_frame: pd.DataFrame, trades: pd.Dat
         summary.update(
             {
                 "gross_pnl_usd": 0.0,
+                "fees_usd": 0.0,
+                "net_pnl_usd": 0.0,
                 "avg_trade_pnl_usd": 0.0,
+                "avg_trade_net_pnl_usd": 0.0,
                 "win_rate": 0.0,
+                "net_win_rate": 0.0,
                 "avg_entry_notional_usd": 0.0,
                 "avg_holding_seconds": 0.0,
             }
@@ -227,8 +339,12 @@ def summarize_convergence(asset: str, signal_frame: pd.DataFrame, trades: pd.Dat
     summary.update(
         {
             "gross_pnl_usd": float(trades["gross_pnl_usd"].sum()),
+            "fees_usd": float(trades["fees_usd"].sum()) if "fees_usd" in trades else 0.0,
+            "net_pnl_usd": float(trades["net_pnl_usd"].sum()) if "net_pnl_usd" in trades else float(trades["gross_pnl_usd"].sum()),
             "avg_trade_pnl_usd": float(trades["gross_pnl_usd"].mean()),
+            "avg_trade_net_pnl_usd": float(trades["net_pnl_usd"].mean()) if "net_pnl_usd" in trades else float(trades["gross_pnl_usd"].mean()),
             "win_rate": float((trades["gross_pnl_usd"] > 0).mean()),
+            "net_win_rate": float((trades["net_pnl_usd"] > 0).mean()) if "net_pnl_usd" in trades else float((trades["gross_pnl_usd"] > 0).mean()),
             "avg_entry_notional_usd": float(trades["entry_notional_usd"].mean()),
             "avg_holding_seconds": float(trades["holding_seconds"].mean()),
         }

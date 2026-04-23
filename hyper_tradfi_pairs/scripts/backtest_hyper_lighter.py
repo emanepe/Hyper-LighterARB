@@ -29,6 +29,25 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--min-notional-usd", type=float, default=25.0)
     parser.add_argument("--max-notional-usd", type=float, default=10_000.0)
     parser.add_argument("--max-holding-seconds", type=int, default=300)
+    parser.add_argument(
+        "--persistence-seconds",
+        type=int,
+        default=1,
+        help="Require the same qualifying over/underpricing signal for N consecutive seconds before entry.",
+    )
+    parser.add_argument(
+        "--book-depth",
+        type=int,
+        choices=[1, 5, 20],
+        default=1,
+        help="Liquidity capacity proxy: 1=top of book, 5=depth_5, 20=depth_20.",
+    )
+    parser.add_argument(
+        "--fee-bps-per-leg",
+        type=float,
+        default=0.0,
+        help="Taker fee estimate per leg per fill in bps. Applied to entry and exit on both venues.",
+    )
     return parser
 
 
@@ -42,6 +61,9 @@ def main() -> None:
         min_notional_usd=args.min_notional_usd,
         max_notional_usd=args.max_notional_usd,
         max_holding_seconds=args.max_holding_seconds,
+        persistence_seconds=args.persistence_seconds,
+        book_depth=args.book_depth,
+        fee_bps_per_leg=args.fee_bps_per_leg,
     )
 
     output_dir = Path(args.output_dir) / args.date
@@ -73,7 +95,9 @@ def main() -> None:
 
         print(
             f"{pair.asset}: rows={summary.get('overlap_rows', 0)} "
-            f"trades={summary.get('trade_count', 0)} pnl={summary.get('gross_pnl_usd', 0.0):.4f}"
+            f"trades={summary.get('trade_count', 0)} "
+            f"gross={summary.get('gross_pnl_usd', 0.0):.4f} "
+            f"net={summary.get('net_pnl_usd', summary.get('gross_pnl_usd', 0.0)):.4f}"
         )
 
     if summaries:
