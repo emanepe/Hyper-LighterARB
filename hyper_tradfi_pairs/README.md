@@ -103,6 +103,18 @@ Run the 1-day pair-trade backtest:
 python -m hyper_tradfi_pairs.scripts.backtest_pair_trade --assets all --date 2026-04-23
 ```
 
+Backtest Hyperliquid <> Lighter convergence pairs:
+
+```powershell
+python -m hyper_tradfi_pairs.scripts.backtest_hyper_lighter --assets all --date 2026-04-23 --entry-gap-bps 5 --exit-gap-bps 0.25 --min-entry-edge-bps 1
+```
+
+This logic is directional convergence trading:
+
+- If Hyperliquid mid is rich vs Lighter, short Hyperliquid at bid and long Lighter at ask.
+- If Lighter mid is rich vs Hyperliquid, short Lighter at bid and long Hyperliquid at ask.
+- Exit when the mid gap converges near zero, flips, or reaches the max holding time.
+
 Fetch Yahoo price-only proxy data:
 
 ```powershell
@@ -181,6 +193,8 @@ The backtest is intentionally simple:
 - Enters when the spread is far from its recent mean.
 - Exits when the spread mean-reverts toward zero.
 - Prices entries and exits off the displayed top-of-book bid/ask, not mids.
+
+The Hyperliquid <> Lighter convergence backtest does not use z-scores. It uses absolute mid-price gap thresholds and always longs the underpriced venue while shorting the overpriced venue.
 
 ## Important Limits
 
