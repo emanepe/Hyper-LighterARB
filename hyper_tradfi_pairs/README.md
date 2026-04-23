@@ -141,6 +141,22 @@ $env:GOOGLE_SHEETS_INGEST_SECRET="choose-a-long-random-secret"
 python -m hyper_tradfi_pairs.scripts.sync_google_sheets --from-end
 ```
 
+Stream live Hyperliquid + Lighter data **directly** to Google Sheets every second (no CSV files):
+
+```powershell
+$env:GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/.../exec"
+$env:GOOGLE_SHEETS_INGEST_SECRET="choose-a-long-random-secret"
+python -m hyper_tradfi_pairs.scripts.stream_live_to_sheets --assets all
+```
+
+Preview the API data without posting to Sheets (no credentials needed):
+
+```powershell
+python -m hyper_tradfi_pairs.scripts.stream_live_to_sheets --assets all --dry-run --duration-seconds 5
+```
+
+The streaming script fetches Hyperliquid via REST and Lighter via WebSocket on every 1-second tick, then POSTs compact rows to the same eight `Hyper_*` / `Lighter_*` spreadsheets used by the CSV syncer. Both scripts share the same `MarketDataIngest.gs` Apps Script and the same 17-column row schema.
+
 Outputs land under:
 
 - `hyper_tradfi_pairs/data/hyperliquid`
