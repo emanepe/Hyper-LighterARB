@@ -287,6 +287,7 @@ def collect_top_of_book(
     writers: dict[tuple[str, str], tuple[object, csv.DictWriter]] = {}
     start_monotonic = time.monotonic()
     next_tick = math.ceil(time.time() / interval_seconds) * interval_seconds
+    next_ping = time.monotonic() + 30.0
     ws: WebSocket | None = None
 
     try:
@@ -308,7 +309,20 @@ def collect_top_of_book(
                     except OSError:
                         pass
                 ws = client.connect_order_books(states)
+                next_ping = time.monotonic() + 30.0
                 continue
+
+            if ws is not None and time.monotonic() >= next_ping:
+                try:
+                    ws.ping()
+                except (OSError, WebSocketConnectionClosedException):
+                    try:
+                        ws.close()
+                    except OSError:
+                        pass
+                    ws = None
+                    continue
+                next_ping = time.monotonic() + 30.0
 
             now = time.time()
             while now >= next_tick:

@@ -16,6 +16,7 @@ It does four things:
 
 It also has a separate Yahoo proxy downloader for coarse price comparison only.
 It now also has an IBKR collector for historical and live 1-second top-of-book recording.
+It also includes an optional Google Sheets sync path for monitoring the local CSV collectors.
 
 ## Verified Mapping
 
@@ -120,6 +121,14 @@ Record ongoing 1-second IBKR top-of-book data:
 python -m hyper_tradfi_pairs.scripts.collect_ibkr_live --assets all --port 7497 --duration-seconds 3600
 ```
 
+Sync local CSV rows to eight separate Google Spreadsheet files:
+
+```powershell
+$env:GOOGLE_SHEETS_WEB_APP_URL="https://script.google.com/macros/s/.../exec"
+$env:GOOGLE_SHEETS_INGEST_SECRET="choose-a-long-random-secret"
+python -m hyper_tradfi_pairs.scripts.sync_google_sheets --from-end
+```
+
 Outputs land under:
 
 - `hyper_tradfi_pairs/data/hyperliquid`
@@ -129,6 +138,38 @@ Outputs land under:
 - `hyper_tradfi_pairs/data/tradfi_ibkr_live`
 - `hyper_tradfi_pairs/data/tradfi_yahoo`
 - `hyper_tradfi_pairs/output/backtests`
+
+## Google Sheets Sync
+
+Google Sheets should be treated as a monitoring/backup sink, not the primary high-frequency database. One second of eight products can exhaust a single spreadsheet quickly, so the syncer is designed for eight separate Spreadsheet files:
+
+- `Hyper_BRENTOIL`
+- `Hyper_GOLD`
+- `Hyper_SILVER`
+- `Hyper_WTI`
+- `Lighter_BRENTOIL`
+- `Lighter_GOLD`
+- `Lighter_SILVER`
+- `Lighter_WTI`
+
+Each Spreadsheet gets one page named `Data`. The uploader writes a compact row schema and trims each file to the latest `50,000` rows by default.
+
+Setup:
+
+1. Create eight Google Spreadsheet files with the names above.
+2. Create an Apps Script project and paste `hyper_tradfi_pairs/google_apps_script/MarketDataIngest.gs`.
+3. In Apps Script project settings, add script properties:
+   - `INGEST_SECRET`
+   - `SPREADSHEET_ID_Hyper_BRENTOIL`
+   - `SPREADSHEET_ID_Hyper_GOLD`
+   - `SPREADSHEET_ID_Hyper_SILVER`
+   - `SPREADSHEET_ID_Hyper_WTI`
+   - `SPREADSHEET_ID_Lighter_BRENTOIL`
+   - `SPREADSHEET_ID_Lighter_GOLD`
+   - `SPREADSHEET_ID_Lighter_SILVER`
+   - `SPREADSHEET_ID_Lighter_WTI`
+4. Deploy as a Web App with access set to `Anyone with the link`.
+5. Put the deployed `/exec` URL in `GOOGLE_SHEETS_WEB_APP_URL` and run the sync command above.
 
 ## What The Backtest Does
 
