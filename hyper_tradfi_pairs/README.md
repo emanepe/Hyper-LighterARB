@@ -1,6 +1,6 @@
-# Hyperliquid <> Tradfi Pair Trading
+# Hyperliquid <> Tradfi Basis Trading
 
-This workspace package is a starting point for a four-asset pair-trading workflow:
+This workspace package is a starting point for a four-asset basis-trading workflow:
 
 - `BRENTOIL`
 - `GOLD`
@@ -12,7 +12,7 @@ It does four things:
 1. Collects live 1-second Hyperliquid top-of-book snapshots.
 2. Collects live 1-second Lighter top-of-book snapshots.
 3. Downloads 1-second tradfi BBO history from Databento.
-4. Runs a simple 1-day mean-reversion backtest using crossed bid/ask prices.
+4. Runs a simple 1-day basis mean-reversion backtest using crossed bid/ask prices.
 
 It also has a separate Yahoo proxy downloader for coarse price comparison only.
 It now also has an IBKR collector for historical and live 1-second top-of-book recording.
@@ -97,13 +97,13 @@ $env:DATABENTO_API_KEY="db-...your-key..."
 python -m hyper_tradfi_pairs.scripts.fetch_databento_bbo --assets all --date 2026-04-23
 ```
 
-Run the 1-day pair-trade backtest:
+Run the 1-day basis-trade backtest:
 
 ```powershell
 python -m hyper_tradfi_pairs.scripts.backtest_pair_trade --assets all --date 2026-04-23
 ```
 
-Backtest Hyperliquid <> Lighter convergence pairs:
+Backtest Hyperliquid <> Lighter basis convergence:
 
 ```powershell
 python -m hyper_tradfi_pairs.scripts.backtest_hyper_lighter --assets all --date 2026-04-23 --entry-gap-bps 5 --exit-gap-bps 0.25 --min-entry-edge-bps 1
@@ -115,7 +115,7 @@ Stricter liquidity-aware variant:
 python -m hyper_tradfi_pairs.scripts.backtest_hyper_lighter --assets BRENTOIL,GOLD,SILVER --date 2026-04-23 --entry-gap-bps 5 --exit-gap-bps 0.25 --min-entry-edge-bps 1 --min-notional-usd 1000 --book-depth 5 --persistence-seconds 2 --fee-bps-per-leg 1
 ```
 
-This logic is directional convergence trading:
+This logic is directional basis convergence trading:
 
 - If Hyperliquid mid is rich vs Lighter, short Hyperliquid at bid and long Lighter at ask.
 - If Lighter mid is rich vs Hyperliquid, short Lighter at bid and long Hyperliquid at ask.
@@ -219,7 +219,7 @@ The backtest is intentionally simple:
 - Exits when the spread mean-reverts toward zero.
 - Prices entries and exits off the displayed top-of-book bid/ask, not mids.
 
-The Hyperliquid <> Lighter convergence backtest does not use z-scores. It uses absolute mid-price gap thresholds and always longs the underpriced venue while shorting the overpriced venue.
+The Hyperliquid <> Lighter basis backtest does not use z-scores. It uses absolute mid-price basis thresholds and always longs the underpriced venue while shorting the overpriced venue.
 
 ## Important Limits
 

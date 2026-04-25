@@ -16,7 +16,7 @@ from hyper_tradfi_pairs.config import parse_assets
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Backtest a 1-day Hyperliquid vs tradfi mean-reversion pair strategy."
+        description="Backtest a 1-day Hyperliquid vs tradfi basis mean-reversion strategy."
     )
     parser.add_argument("--assets", default="all", help="Comma-separated list or 'all'.")
     parser.add_argument("--date", required=True, help="UTC date in YYYY-MM-DD format.")

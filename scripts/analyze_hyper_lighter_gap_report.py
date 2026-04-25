@@ -282,7 +282,7 @@ def close_position(position: dict, row: pd.Series, reason: str, config: TradeCon
     }
 
 
-def run_pair_trade_backtest(fresh: pd.DataFrame, config: TradeConfig) -> pd.DataFrame:
+def run_basis_trade_backtest(fresh: pd.DataFrame, config: TradeConfig) -> pd.DataFrame:
     trades = []
     for asset, group in fresh.groupby("asset", sort=False):
         position = None
@@ -463,7 +463,7 @@ def make_trading_page(
     trades: pd.DataFrame,
 ) -> plt.Figure:
     fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
-    fig.suptitle("Convergence and Pair-Trade Analysis", fontsize=15, weight="bold")
+    fig.suptitle("Basis Convergence Analysis", fontsize=15, weight="bold")
 
     ax = axes[0, 0]
     top = clusters.head(10).sort_values("seconds_abs_gap_gt_5bps")
@@ -556,7 +556,7 @@ def lines_for_executive(
         f"Entry: |mid gap| >= {config.entry_gap_bps:.1f} bps, executable edge >= {config.entry_edge_bps:.1f} bps",
         f"Depth: depth-5 capacity >= ${config.min_depth5_notional_usd:,.0f}, max notional ${config.max_notional_usd:,.0f}",
         f"Exit: gap <= {config.exit_gap_bps:.2f} bps, price cross, or {config.max_holding_seconds}s max hold",
-        f"Fees: {config.fee_bps_per_leg:.1f} bps per leg per fill, four fills per pair trade",
+        f"Fees: {config.fee_bps_per_leg:.1f} bps per leg per fill, four fills per basis trade",
     ]
     if trades.empty:
         lines.append("No realized trades under the strict rules.")
@@ -620,7 +620,7 @@ def lines_for_strategy(
         "------------------------",
     ]
     if trades.empty:
-        lines.append("No realized strict pair trades.")
+        lines.append("No realized strict basis trades.")
     else:
         by_asset = trades.groupby("asset").agg(
             trades=("net_pnl_usd", "size"),
@@ -670,12 +670,12 @@ def main() -> None:
     all_rows, fresh = build_frames()
     summary = price_gap_summary(fresh)
     clusters = cluster_summary(fresh, config)
-    trades = run_pair_trade_backtest(fresh, config)
+    trades = run_basis_trade_backtest(fresh, config)
     unresolved = unresolved_signal_summary(fresh, config)
 
     summary.to_csv(output_dir / "price_gap_summary.csv", index=False)
     clusters.to_csv(output_dir / "time_cluster_summary.csv", index=False)
-    trades.to_csv(output_dir / "strict_pair_trade_trades.csv", index=False)
+    trades.to_csv(output_dir / "strict_basis_trade_trades.csv", index=False)
     unresolved.to_csv(output_dir / "strict_signal_seconds.csv", index=False)
 
     pdf_path = output_dir / "hyper_lighter_gap_analysis_report.pdf"
@@ -683,7 +683,7 @@ def main() -> None:
         add_text_page(pdf, lines_for_executive(all_rows, fresh, summary, trades, config))
         save_fig(pdf, make_distribution_page(fresh), output_dir / "price_gap_distribution.png")
         save_fig(pdf, make_timing_page(fresh, config), output_dir / "timing_gap_clusters.png")
-        save_fig(pdf, make_trading_page(fresh, clusters, trades), output_dir / "convergence_pair_trade.png")
+        save_fig(pdf, make_trading_page(fresh, clusters, trades), output_dir / "basis_convergence.png")
         add_text_page(pdf, lines_for_strategy(summary, clusters, trades, unresolved))
 
     print(f"report_dir={output_dir}")

@@ -402,7 +402,7 @@ def make_gap_timing_page(fresh: pd.DataFrame) -> plt.Figure:
 
 def make_pnl_page(single: pd.DataFrame, scaled: pd.DataFrame, sensitivity: pd.DataFrame) -> plt.Figure:
     fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
-    fig.suptitle("No-Max-Hold Mid-Price Pair Trade Results", fontsize=15, weight="bold")
+    fig.suptitle("No-Max-Hold Mid-Price Basis Trade Results", fontsize=15, weight="bold")
 
     combo = pd.DataFrame(
         {

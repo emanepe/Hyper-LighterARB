@@ -16,7 +16,7 @@ from hyper_tradfi_pairs.dex_pair_backtest import (
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Backtest Hyperliquid <> Lighter convergence pairs: long underpriced, short overpriced."
+        description="Backtest Hyperliquid <> Lighter basis convergence: long underpriced, short overpriced."
     )
     parser.add_argument("--assets", default="all", help="Comma-separated list or 'all'.")
     parser.add_argument("--date", required=True, help="UTC date in YYYY-MM-DD format.")
