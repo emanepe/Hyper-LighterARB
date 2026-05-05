@@ -1,0 +1,15 @@
+asset,source,hyper_symbol,lighter_symbol,reason
+AMD,xyz,AMD,AMD,no_overlap_or_missing_symbol
+BRENTOIL,xyz,BRENTOIL,BRENTOIL,no_overlap_or_missing_symbol
+GOLD,flx,GOLD,XAU,no_overlap_or_missing_symbol
+GOLD,km,GOLD,XAU,no_overlap_or_missing_symbol
+GOLD,xyz,GOLD,XAU,no_overlap_or_missing_symbol
+GOLD,cash,GOLD,XAU,no_overlap_or_missing_symbol
+PLATINUM,flx,PLATINUM,XPT,no_overlap_or_missing_symbol
+PLATINUM,xyz,PLATINUM,XPT,no_overlap_or_missing_symbol
+SAMSUNG,xyz,SMSN,SAMSUNG,no_overlap_or_missing_symbol
+SILVER,flx,SILVER,XAG,no_overlap_or_missing_symbol
+SILVER,km,SILVER,XAG,no_overlap_or_missing_symbol
+SILVER,xyz,SILVER,XAG,no_overlap_or_missing_symbol
+SILVER,cash,SILVER,XAG,no_overlap_or_missing_symbol
+WTI,cash,WTI,WTI,no_overlap_or_missing_symbol

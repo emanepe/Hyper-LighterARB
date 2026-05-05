@@ -1,1 +1,13 @@
 installers/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local diagnostic / scratch scripts (use scripts/ for committed analysis code)
+/_*.py
+/_*.pkl
+/_*.parquet
+
+# Local Claude Code state
+.claude/
